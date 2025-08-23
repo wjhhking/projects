@@ -280,6 +280,14 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+/* Public Games 页面 */
+.public-games-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: calc(100vh - 80px);
+}
+
 /* 响应式设计 */
 @media (max-width: 768px) {
   .games-grid,

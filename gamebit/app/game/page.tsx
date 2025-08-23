@@ -65,6 +65,9 @@ export default function GamePage() {
           <button onClick={handleSaveGame} className="nav-btn primary">
             Save to My Games
           </button>
+          <Link href="/public-games" className="nav-btn">
+            Public Games
+          </Link>
           <Link href="/my-games" className="nav-btn">
             My Games
           </Link>

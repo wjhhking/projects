@@ -58,6 +58,9 @@ export default function MyGamesPage() {
           <Link href="/" className="nav-btn primary">
             + Create New Game
           </Link>
+          <Link href="/public-games" className="nav-btn">
+            Public Games
+          </Link>
         </div>
       </nav>
 
