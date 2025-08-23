@@ -32,7 +32,7 @@ export interface Enemy {
   y: number
   width: number
   height: number
-  type: 'goomba' | 'koopa' | 'bullet'
+  type: 'goomba' | 'koopa' | 'bullet' | 'soldier' | 'tank' | 'turret' | 'helicopter'
   direction: number
   alive: boolean
   canBeStomped: boolean

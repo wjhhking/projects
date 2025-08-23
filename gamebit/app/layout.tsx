@@ -1,4 +1,5 @@
 import './globals.css'
+import TopNavBar from '../components/TopNavBar'
 
 export const metadata = {
   title: 'GameBit - 1 Sentence to a Game',
@@ -12,7 +13,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <TopNavBar />
+        {children}
+      </body>
     </html>
   )
 }

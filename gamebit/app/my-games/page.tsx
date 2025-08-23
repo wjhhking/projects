@@ -47,23 +47,6 @@ export default function MyGamesPage() {
 
   return (
     <div>
-      {/* 顶部导航 */}
-      <nav className="top-nav">
-        <div className="logo">
-          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            🎮 GameBit
-          </Link>
-        </div>
-        <div className="nav-buttons">
-          <Link href="/" className="nav-btn primary">
-            + Create New Game
-          </Link>
-          <Link href="/public-games" className="nav-btn">
-            Public Games
-          </Link>
-        </div>
-      </nav>
-
       {/* 主内容 */}
       <div className="my-games-container">
         <h1 style={{ 

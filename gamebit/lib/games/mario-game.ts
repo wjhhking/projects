@@ -1,11 +1,22 @@
 import { GameLevel } from '../game-engine'
 import { BaseGame } from './base-game'
-import { renderFlag } from '../sprites'
+import { renderFlag } from '../sprites/common-sprites'
+import { GOOMBA_SPRITES } from '../sprites/mario-sprites'
 
 export class MarioGame extends BaseGame {
+  private goombaSprite!: ImageData
+
   constructor(canvas: HTMLCanvasElement) {
-    super(canvas)
+    super(canvas, 'mario')
     this.generateLevels()
+  }
+
+  protected initializeSprites(): void {
+    this.goombaSprite = this.spriteRenderer.createPixelSprite(
+      GOOMBA_SPRITES.walking,
+      GOOMBA_SPRITES.colors
+    )
+    this.enemySprite = this.goombaSprite
   }
 
   generateLevels() {

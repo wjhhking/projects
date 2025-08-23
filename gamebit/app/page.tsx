@@ -33,23 +33,6 @@ export default function Home() {
 
   return (
     <div>
-      {/* 顶部导航 */}
-      <nav className="top-nav">
-        <div className="logo">
-          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            🎮 GameBit
-          </Link>
-        </div>
-        <div className="nav-buttons">
-          <Link href="/public-games" className="nav-btn">
-            Public Games
-          </Link>
-          <Link href="/my-games" className="nav-btn">
-            My Games
-          </Link>
-        </div>
-      </nav>
-
       {/* 主内容 */}
       <div className="home-container">
         {/* 生成器区域 */}
@@ -71,7 +54,7 @@ export default function Home() {
               color: '#64748b',
               marginBottom: '2rem'
             }}>
-              Turn your imagination into 8-bit reality with just one sentence!
+              One line, one game
             </p>
           </div>
           
@@ -81,7 +64,7 @@ export default function Home() {
               value={sentence}
               onChange={(e) => setSentence(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleGenerate()}
-              placeholder="Describe your 8-bit game in one sentence..."
+              placeholder="Describe your game in one line..."
               className="sentence-input"
               maxLength={200}
             />

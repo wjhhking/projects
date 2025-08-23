@@ -1,7 +1,9 @@
 import { GameEngine, GameLevel, Platform, Enemy, Collectible } from './game-engine'
 import { Player } from './player'
 import { AudioManager } from './audio'
-import { SpriteRenderer, GOOMBA_SPRITES, COIN_SPRITES, renderFlag } from './sprites'
+import { SpriteRenderer } from './sprites'
+import { GOOMBA_SPRITES } from './sprites/mario-sprites'
+import { COIN_SPRITES, renderFlag } from './sprites/common-sprites'
 
 export class Game extends GameEngine {
   player: Player

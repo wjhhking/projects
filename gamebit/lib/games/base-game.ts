@@ -1,7 +1,8 @@
 import { GameEngine, GameLevel } from '../game-engine'
 import { Player } from '../player'
 import { AudioManager } from '../audio'
-import { SpriteRenderer, GOOMBA_SPRITES, COIN_SPRITES, renderFlag } from '../sprites'
+import { SpriteRenderer } from '../sprites'
+import { COIN_SPRITES, renderFlag } from '../sprites/common-sprites'
 
 export abstract class BaseGame extends GameEngine {
   player: Player
@@ -9,6 +10,7 @@ export abstract class BaseGame extends GameEngine {
   levels: GameLevel[] = []
   keys: { [key: string]: boolean } = {}
   score: number = 0
+  gameType: string
 
   audioManager: AudioManager
   gameOverTimer: number = 0
@@ -16,27 +18,30 @@ export abstract class BaseGame extends GameEngine {
   
   // 精灵系统
   protected spriteRenderer: SpriteRenderer
-  protected goombaSprite: ImageData
+  protected enemySprite?: ImageData
   protected coinSprite: ImageData
   
-  constructor(canvas: HTMLCanvasElement) {
+  constructor(canvas: HTMLCanvasElement, gameType: string) {
     super(canvas)
-    this.player = new Player()
+    this.gameType = gameType
+    this.player = new Player(50, 300, gameType)
     this.audioManager = new AudioManager()
     
     // 初始化精灵系统
     this.spriteRenderer = new SpriteRenderer()
-    this.goombaSprite = this.spriteRenderer.createPixelSprite(
-      GOOMBA_SPRITES.walking,
-      GOOMBA_SPRITES.colors
-    )
     this.coinSprite = this.spriteRenderer.createPixelSprite(
       COIN_SPRITES.spinning,
       COIN_SPRITES.colors
     )
     
+    // 子类需要初始化自己的敌人精灵
+    this.initializeSprites()
+    
     this.setupControls()
   }
+
+  // 抽象方法，子类实现自己的精灵初始化
+  protected abstract initializeSprites(): void
 
   setupControls() {
     window.addEventListener('keydown', (e) => {
@@ -47,7 +52,7 @@ export abstract class BaseGame extends GameEngine {
         return
       }
       
-      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'Space'].includes(e.code)) {
+      if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'KeyZ', 'KeyX'].includes(e.code)) {
         e.preventDefault()
       }
     })
@@ -84,12 +89,8 @@ export abstract class BaseGame extends GameEngine {
       this.player.stop()
     }
 
-    if (this.keys['Space'] || this.keys['ArrowUp'] || this.keys['KeyW']) {
+    if (this.keys['KeyZ'] || this.keys['ArrowUp'] || this.keys['KeyW']) {
       this.player.jump()
-    }
-
-    if (this.keys['KeyZ']) {
-      this.player.actionA()
     }
 
     if (this.keys['KeyX']) {
@@ -97,10 +98,16 @@ export abstract class BaseGame extends GameEngine {
     }
   }
 
-  updateCamera() {
+  updateCamera(deltaTime?: number) {
     const targetX = this.player.x - this.width / 2
     const currentLevel = this.levels[this.currentLevel]
     this.camera.x = Math.max(0, Math.min(targetX, currentLevel.width - this.width))
+    
+    // Prevent player from moving behind camera (off left side of screen)
+    if (this.player.x < this.camera.x) {
+      this.player.x = this.camera.x
+      this.player.vx = Math.max(0, this.player.vx) // Stop leftward movement
+    }
   }
 
   updateEnemies(deltaTime: number) {
@@ -210,7 +217,13 @@ export abstract class BaseGame extends GameEngine {
     // 渲染敌人
     currentLevel.enemies.forEach(enemy => {
       if (enemy.alive) {
-        this.spriteRenderer.renderSprite(this.ctx, this.goombaSprite, enemy.x, enemy.y, 2)
+        if (this.enemySprite) {
+          this.spriteRenderer.renderSprite(this.ctx, this.enemySprite, enemy.x, enemy.y, 2)
+        } else {
+          // 默认敌人渲染
+          this.ctx.fillStyle = '#8b4513'
+          this.ctx.fillRect(enemy.x, enemy.y, enemy.width, enemy.height)
+        }
       } else {
         this.ctx.fillStyle = '#654321'
         this.ctx.fillRect(enemy.x, enemy.y + 24, enemy.width, 8)
@@ -231,10 +244,7 @@ export abstract class BaseGame extends GameEngine {
   }
 
   renderUI() {
-    this.ctx.fillStyle = '#ffffff'
-    this.ctx.font = '16px "Press Start 2P"'
-    this.ctx.fillText(`Score: ${this.score}`, 10, 30)
-    this.ctx.fillText(`Level: ${this.currentLevel + 1}`, 10, 60)
+    // 游戏内不显示 UI，保持纯净的游戏画面
   }
 
   renderGameOver() {
