@@ -98,7 +98,8 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
             let keys = {
               left: false,
               right: false,
-              up: false
+              up: false,
+              down: false
             }
             
             // Listen to window keydown/keyup events
@@ -107,6 +108,7 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
               if (e.code === 'ArrowLeft') { keys.left = true; e.preventDefault() }
               if (e.code === 'ArrowRight') { keys.right = true; e.preventDefault() }
               if (e.code === 'ArrowUp') { keys.up = true; e.preventDefault() }
+              if (e.code === 'ArrowDown') { keys.down = true; e.preventDefault() }
               console.log('🔥 keys after:', {...keys})
             }
             
@@ -115,6 +117,7 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
               if (e.code === 'ArrowLeft') keys.left = false
               if (e.code === 'ArrowRight') keys.right = false
               if (e.code === 'ArrowUp') keys.up = false
+              if (e.code === 'ArrowDown') keys.down = false
             }
             
             window.addEventListener('keydown', handleKeyDown)
@@ -131,7 +134,8 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
               scene.input.keyboard.addCapture([
                 Phaser.Input.Keyboard.KeyCodes.LEFT,
                 Phaser.Input.Keyboard.KeyCodes.RIGHT,
-                Phaser.Input.Keyboard.KeyCodes.UP
+                Phaser.Input.Keyboard.KeyCodes.UP,
+                Phaser.Input.Keyboard.KeyCodes.DOWN
               ])
             }
 
@@ -189,7 +193,7 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
               console.debug('[preview] no specific game detected, showing generic preview')
             }
 
-            const info = [`World ${cols}x${rows} t=${tileSize}`, `Systems: ${systems.map(s => s.type).join(', ')}`, 'Controls: ← → move, ↑ rotate']
+            const info = [`World ${cols}x${rows} t=${tileSize}`, `Systems: ${systems.map(s => s.type).join(', ')}`, 'Controls: ← → move, ↑ rotate, ↓ soft drop']
             scene.add.text(12, 12, info.join('\n'), { fontFamily: 'monospace', fontSize: '12px', color: '#ffffff' })
           }
         }
@@ -349,9 +353,11 @@ function runTetris(scene: import('phaser').Scene, ops: RuntimeOps, scale: number
 
   function validAt(x: number, y: number, rot: number) {
     const cellsDef = current.s.rots[rot % 4]
+    console.log('🔍 VALIDAT:', { x, y, rot, cellsDef, gridSize: { cols, rows } })
     for (const c of cellsDef) {
       const gx = x + c.x
       const gy = y + c.y
+      console.log('🔍 CHECK CELL:', { gx, gy, inBounds: gx >= 0 && gx < cols && gy >= 0 && gy < rows, occupied: gy >= 0 && gy < rows && gx >= 0 && gx < cols ? grid[gy][gx] : 'out-of-bounds' })
       if (gx < 0 || gx >= cols || gy < 0 || gy >= rows) return false
       if (grid[gy][gx] !== null) return false
     }
@@ -405,27 +411,56 @@ function runTetris(scene: import('phaser').Scene, ops: RuntimeOps, scale: number
     }
 
     if (moveCooldown === 0) {
-      if (left && validAt(current.x - 1, current.y, current.rot)) { 
-        console.debug('[tetris] moving left')
-        setPiece(false); current.x -= 1; setPiece(true); moveCooldown = 120 
+      if (left) {
+        setPiece(false) // Remove piece first
+        const canMove = validAt(current.x - 1, current.y, current.rot)
+        console.log('🎮 LEFT:', { canMove, currentX: current.x, newX: current.x - 1 })
+        if (canMove) { 
+          console.log('🎮 MOVING LEFT')
+          current.x -= 1
+          setPiece(true)
+          moveCooldown = 120 
+        } else {
+          setPiece(true) // Put piece back if can't move
+        }
       }
-      else if (right && validAt(current.x + 1, current.y, current.rot)) { 
-        console.debug('[tetris] moving right')
-        setPiece(false); current.x += 1; setPiece(true); moveCooldown = 120 
+      else if (right) {
+        setPiece(false) // Remove piece first
+        const canMove = validAt(current.x + 1, current.y, current.rot)
+        console.log('🎮 RIGHT:', { canMove, currentX: current.x, newX: current.x + 1 })
+        if (canMove) { 
+          console.log('🎮 MOVING RIGHT')
+          current.x += 1
+          setPiece(true)
+          moveCooldown = 120 
+        } else {
+          setPiece(true) // Put piece back if can't move
+        }
       }
-      else if (rotate && validAt(current.x, current.y, current.rot + 1)) { 
-        console.debug('[tetris] rotating')
-        setPiece(false); current.rot = (current.rot + 1) % 4; setPiece(true); moveCooldown = 150 
+      else if (rotate) {
+        setPiece(false) // Remove piece first
+        const canRotate = validAt(current.x, current.y, current.rot + 1)
+        console.log('🎮 ROTATE:', { canRotate, currentRot: current.rot, newRot: (current.rot + 1) % 4 })
+        if (canRotate) { 
+          console.log('🎮 ROTATING')
+          current.rot = (current.rot + 1) % 4
+          setPiece(true)
+          moveCooldown = 150 
+        } else {
+          setPiece(true) // Put piece back if can't rotate
+        }
       }
     }
   } })
 
   scene.time.addEvent({ delay: 16, loop: true, callback: () => {
-    const step = dropMs
-    if (!scene.data.get('tetrisDropTimer')) scene.data.set('tetrisDropTimer', step)
+    // Use faster drop speed when down arrow is held
+    const currentDropMs = ctx.keys.down ? Math.max(16, Math.floor(dropMs / 8)) : dropMs
+    
+    if (!scene.data.get('tetrisDropTimer')) scene.data.set('tetrisDropTimer', currentDropMs)
     const t = (scene.data.get('tetrisDropTimer') as number) - 16
     if (t > 0) { scene.data.set('tetrisDropTimer', t); return }
-    scene.data.set('tetrisDropTimer', step)
+    scene.data.set('tetrisDropTimer', currentDropMs)
 
     setPiece(false)
     if (validAt(current.x, current.y + 1, current.rot)) {
