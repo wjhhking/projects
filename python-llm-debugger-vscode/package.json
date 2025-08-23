@@ -1,0 +1,98 @@
+{
+  "name": "llm-python-debugger",
+  "displayName": "LLM Python Debugger",
+  "description": "AI-powered Python debugging with intelligent step-by-step analysis",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": ["Debuggers", "Other"],
+  "activationEvents": [
+    "onLanguage:python",
+    "onDebug",
+    "onCommand:llm-debugger.startSession",
+    "onView:llmDebuggerPanel"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "llm-debugger.startSession",
+        "title": "Start LLM Debug Session",
+        "category": "LLM Debugger"
+      },
+      {
+        "command": "llm-debugger.analyzeCurrentState",
+        "title": "Analyze Current Debug State",
+        "category": "LLM Debugger"
+      },
+      {
+        "command": "llm-debugger.suggestNextStep",
+        "title": "Get LLM Debugging Suggestion",
+        "category": "LLM Debugger"
+      },
+      {
+        "command": "llm-debugger.setIntelligentBreakpoint",
+        "title": "Set Intelligent Breakpoint",
+        "category": "LLM Debugger"
+      }
+    ],
+    "views": {
+      "debug": [
+        {
+          "id": "llmDebuggerPanel",
+          "name": "LLM Debugger Assistant",
+          "when": "inDebugMode"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "LLM Python Debugger",
+      "properties": {
+        "llmDebugger.apiKey": {
+          "type": "string",
+          "description": "API key for LLM service (OpenAI, Anthropic, etc.)"
+        },
+        "llmDebugger.maxContextLines": {
+          "type": "number",
+          "default": 50,
+          "description": "Maximum lines of code context to send to LLM"
+        },
+        "llmDebugger.apiProvider": {
+          "type": "string",
+          "enum": ["openai", "anthropic", "local"],
+          "default": "openai",
+          "description": "LLM API provider"
+        },
+        "llmDebugger.model": {
+          "type": "string",
+          "default": "gpt-4",
+          "description": "LLM model to use"
+        },
+        "llmDebugger.localEndpoint": {
+          "type": "string",
+          "default": "http://localhost:11434/api/generate",
+          "description": "Local LLM endpoint URL (for Ollama, etc.)"
+        },
+        "llmDebugger.localModel": {
+          "type": "string",
+          "default": "codellama",
+          "description": "Local LLM model name"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "16.x",
+    "@types/vscode": "^1.74.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "axios": "^1.6.0"
+  }
+}

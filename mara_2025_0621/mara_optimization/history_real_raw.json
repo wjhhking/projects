@@ -1,0 +1,461 @@
+[
+    {
+        "site_id": 0,
+        "id": 474,
+        "air_miners": 0,
+        "hydro_miners": 0,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 66,
+        "updated_at": "2025-06-21T19:30:47.964566",
+        "total_power_used": 660000,
+        "total_power_cost": 1127330.6986310724,
+        "total_revenue": 284536.9729863108,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 0,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 660000
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 0.0,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 284536.9729863108
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 476,
+        "air_miners": 0,
+        "hydro_miners": 0,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 66,
+        "updated_at": "2025-06-21T19:31:48.605678",
+        "total_power_used": 660000,
+        "total_power_cost": 1127330.6986310724,
+        "total_revenue": 284536.9729863108,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 0,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 660000
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 0.0,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 284536.9729863108
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 478,
+        "air_miners": 0,
+        "hydro_miners": 0,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 66,
+        "updated_at": "2025-06-21T19:35:15.089936",
+        "total_power_used": 660000,
+        "total_power_cost": 1130157.7107905592,
+        "total_revenue": 281463.833920516,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 0,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 660000
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 0.0,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 281463.833920516
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 482,
+        "air_miners": 0,
+        "hydro_miners": 0,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 66,
+        "updated_at": "2025-06-21T19:40:16.518597",
+        "total_power_used": 660000,
+        "total_power_cost": 1048202.4709812556,
+        "total_revenue": 300151.0494927218,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 0,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 660000
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 0.0,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 300151.0494927218
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 504,
+        "air_miners": 0,
+        "hydro_miners": 0,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 66,
+        "updated_at": "2025-06-21T19:45:18.009227",
+        "total_power_used": 660000,
+        "total_power_cost": 964389.763069722,
+        "total_revenue": 273705.3287174969,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 0,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 660000
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 0.0,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 273705.3287174969
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 507,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T19:47:23.534645",
+        "total_power_used": 1000000,
+        "total_power_cost": 1461196.6107117,
+        "total_revenue": 3165896.22855541,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 3165896.22855541,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 510,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T19:50:27.598607",
+        "total_power_used": 1000000,
+        "total_power_cost": 1412414.9430780548,
+        "total_revenue": 3290472.1482048514,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 3290472.1482048514,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 520,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T19:55:28.858706",
+        "total_power_used": 1000000,
+        "total_power_cost": 1315826.1890187522,
+        "total_revenue": 3372443.0299281874,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 3372443.0299281874,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 525,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:00:30.104756",
+        "total_power_used": 1000000,
+        "total_power_cost": 1373449.899896457,
+        "total_revenue": 2613682.91622412,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2613682.91622412,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 528,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:05:31.360679",
+        "total_power_used": 1000000,
+        "total_power_cost": 1470289.8967985976,
+        "total_revenue": 2835397.9627379673,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2835397.9627379673,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 534,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:10:32.647086",
+        "total_power_used": 1000000,
+        "total_power_cost": 1352479.6343619556,
+        "total_revenue": 2193128.802527083,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2193128.802527083,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 542,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:15:33.911096",
+        "total_power_used": 1000000,
+        "total_power_cost": 1471089.0629993242,
+        "total_revenue": 2491425.955296124,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2491425.955296124,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 562,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:21:51.911857",
+        "total_power_used": 1000000,
+        "total_power_cost": 1400731.408942543,
+        "total_revenue": 2990644.416036583,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2990644.416036583,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 574,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:32:04.855208",
+        "total_power_used": 1000000,
+        "total_power_cost": 1269507.2872530706,
+        "total_revenue": 2764065.5346788317,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2764065.5346788317,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 576,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:35:05.944308",
+        "total_power_used": 1000000,
+        "total_power_cost": 1247869.5181702664,
+        "total_revenue": 2462469.0768255107,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2462469.0768255107,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 581,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:40:07.098123",
+        "total_power_used": 1000000,
+        "total_power_cost": 1177758.851424358,
+        "total_revenue": 2778840.6123284716,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 2778840.6123284716,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    },
+    {
+        "site_id": 0,
+        "id": 604,
+        "air_miners": 0,
+        "hydro_miners": 200,
+        "immersion_miners": 0,
+        "gpu_compute": 0,
+        "asic_compute": 0,
+        "updated_at": "2025-06-21T20:45:08.272371",
+        "total_power_used": 1000000,
+        "total_power_cost": 1206797.1149247393,
+        "total_revenue": 3093882.41230138,
+        "power": {
+            "air_miners": 0,
+            "hydro_miners": 1000000,
+            "immersion_miners": 0,
+            "gpu_compute": 0,
+            "asic_compute": 0
+        },
+        "revenue": {
+            "air_miners": 0.0,
+            "hydro_miners": 3093882.41230138,
+            "immersion_miners": 0.0,
+            "gpu_compute": 0.0,
+            "asic_compute": 0.0
+        }
+    }
+]

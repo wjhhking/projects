@@ -1,0 +1,26 @@
+{
+    "inference": {
+        "asic": {
+            "power": 10000,
+            "tokens": 5000
+        },
+        "gpu": {
+            "power": 3333,
+            "tokens": 1000
+        }
+    },
+    "miners": {
+        "air": {
+            "hashrate": 1000,
+            "power": 3333
+        },
+        "hydro": {
+            "hashrate": 10000,
+            "power": 5000
+        },
+        "immersion": {
+            "hashrate": 5000,
+            "power": 10000
+        }
+    }
+} 
