@@ -17,14 +17,27 @@ export default function Home() {
 
   const handleGenerate = async () => {
     if (!sentence.trim()) return
-    
     setIsGenerating(true)
-    
-    // 模拟生成过程
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    // 导航到游戏页面
-    router.push(`/game?sentence=${encodeURIComponent(sentence.trim())}`)
+    try {
+      const res = await fetch('/api/compose', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: sentence.trim() })
+      })
+      if (!res.ok) throw new Error('Compose failed')
+      const data = await res.json()
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('compositionPlan', JSON.stringify(data.plan))
+        localStorage.setItem('compositionValidation', JSON.stringify(data.validation))
+        if (data.runtimeOps) localStorage.setItem('runtimeOps', JSON.stringify(data.runtimeOps))
+        if (data.opsValidation) localStorage.setItem('opsValidation', JSON.stringify(data.opsValidation))
+      }
+      router.push('/plan')
+    } catch (e) {
+      console.error(e)
+      setIsGenerating(false)
+      alert('Failed to generate plan')
+    }
   }
 
   const handlePromptSelect = (prompt: string) => {
