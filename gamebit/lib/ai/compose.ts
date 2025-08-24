@@ -1,7 +1,5 @@
 import { CompositionPlan } from '@/lib/composition/types'
 import { metaTemplates } from '@/lib/composition/inventory'
-import { validateCompositionPlan } from '@/lib/composition/validate'
-import { validateRuntimeOps } from '@/lib/composition/validateOps'
 import type { RuntimeOps } from '@/lib/composition/runtimeOps'
 
 function compactInventory() {
@@ -130,32 +128,5 @@ export async function generatePlanAndOpsViaLLM(userPrompt: string) {
   if (plan && !plan.planVersion) plan.planVersion = '1.0' as any
   if (plan && !plan.targetRuntime) (plan as any).targetRuntime = 'phaser'
 
-  let planValidation = plan ? validateCompositionPlan(plan) : { ok: false, errors: ['missing plan'], warnings: [] }
-  let opsValidation = runtimeOps ? validateRuntimeOps(runtimeOps) : { ok: false, errors: ['missing runtimeOps'], warnings: [] }
-
-  if (planValidation.ok && opsValidation.ok) {
-    return { plan, planValidation, runtimeOps, opsValidation, repaired: false }
-  }
-
-  const repairMsg = JSON.stringify({
-    instruction: 'Repair the JSON so that plan and runtimeOps pass validation. Return ONLY JSON with {plan, runtimeOps}. Keep under 600 tokens.',
-    planValidationErrors: planValidation.errors,
-    opsValidationErrors: opsValidation.errors,
-    lastJson: raw
-  })
-
-  raw = await callOpenAI([
-    { role: 'system', content: system },
-    { role: 'user', content: buildSlimUserPrompt(userPrompt) },
-    { role: 'user', content: repairMsg }
-  ])
-
-  plan = raw.plan as CompositionPlan
-  runtimeOps = raw.runtimeOps as RuntimeOps
-  if (plan && !plan.planVersion) plan.planVersion = '1.0' as any
-  if (plan && !plan.targetRuntime) (plan as any).targetRuntime = 'phaser'
-  planValidation = plan ? validateCompositionPlan(plan) : { ok: false, errors: ['missing plan'], warnings: [] }
-  opsValidation = runtimeOps ? validateRuntimeOps(runtimeOps) : { ok: false, errors: ['missing runtimeOps'], warnings: [] }
-
-  return { plan, planValidation, runtimeOps, opsValidation, repaired: true }
+  return { plan, runtimeOps }
 }
