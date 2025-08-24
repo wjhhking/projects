@@ -51,18 +51,8 @@ export default function MyGamesPage() {
         localStorage.setItem('generatedGames', JSON.stringify(games))
         setSavedGames(games)
       } else {
-        // Initialize with both default games
-        const defaultGame: SavedGame = {
-          id: 'mygame1',
-          name: 'Soldier Adventure',
-          description: 'A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets',
-          engine: 'Famicom',
-          gameType: 'contra',
-          createdAt: new Date().toISOString(),
-          thumbnail: '🎮',
-          controls: 'Use arrow keys to move, Space to shoot'
-        }
-        const initialGames = [contraGame, defaultGame]
+        // Initialize with just the Brave Soldier game
+        const initialGames = [contraGame]
         setSavedGames(initialGames)
         localStorage.setItem('generatedGames', JSON.stringify(initialGames))
       }

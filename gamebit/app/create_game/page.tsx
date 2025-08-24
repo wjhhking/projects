@@ -173,22 +173,14 @@ export default function CreateGamePage() {
               {getStageText()}
             </div>
             
-            {/* Progress Bar */}
+            {/* Loading dots */}
             {stage !== 'none' && stage !== 'complete' && (
               <div style={{
-                width: '100%',
-                height: '8px',
-                backgroundColor: '#e2e8f0',
-                borderRadius: '4px',
+                fontSize: '2rem',
                 marginBottom: '1.5rem',
-                overflow: 'hidden'
+                color: '#3b82f6'
               }}>
-                <div style={{
-                  width: `${progress}%`,
-                  height: '100%',
-                  backgroundColor: '#3b82f6',
-                  transition: 'width 0.1s ease'
-                }} />
+                ...
               </div>
             )}
             
@@ -226,14 +218,14 @@ export default function CreateGamePage() {
         </div>
 
         {/* Game Details - appears after planning stage */}
-        {gameData && (stage === 'implementation' || stage === 'complete') && (
+        {(stage === 'plan' || stage === 'implementation' || stage === 'complete') && (
           <div style={{ marginBottom: '3rem' }}>
             <h2 className="generator-title">Game Details</h2>
             <div style={{ display: 'grid', gap: '1rem' }}>
               <div style={{ display: 'grid', gap: '0.5rem' }}>
-                <div><strong>Title:</strong> {gameData.name}</div>
-                <div><strong>Description:</strong> {gameData.description}</div>
-                <div><strong>Engine:</strong> {gameData.engine}</div>
+                <div><strong>Title:</strong> Brave Soldier</div>
+                <div><strong>Description:</strong> A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets</div>
+                <div><strong>Engine:</strong> Famicom</div>
                 <div><strong>Status:</strong> Valid ✅</div>
               </div>
             </div>
@@ -241,7 +233,7 @@ export default function CreateGamePage() {
         )}
 
         {/* Preview */}
-        <div>
+        <div style={{ marginBottom: '3rem' }}>
           <h2 className="generator-title">Preview</h2>
           {stage === 'complete' && gameData ? (
             <div>
@@ -289,6 +281,58 @@ export default function CreateGamePage() {
             </div>
           )}
         </div>
+
+        {/* Game Plan - appears when planning is done */}
+        {(stage === 'plan' || stage === 'implementation' || stage === 'complete') && (
+          <section className="generator-section" style={{ marginBottom: '3rem' }}>
+            <h2 className="generator-title">Game Plan</h2>
+            <div style={{ display: 'grid', gap: '1rem' }}>
+              <div style={{ display: 'grid', gap: '0.5rem' }}>
+                <div><strong>Title:</strong> Brave Soldier</div>
+                <div><strong>Description:</strong> A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets</div>
+                <div><strong>Engine:</strong> Famicom</div>
+                <div><strong>Plan Status:</strong> Valid ✅</div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Templates - appears when planning is done */}
+        {(stage === 'plan' || stage === 'implementation' || stage === 'complete') && (
+          <section className="generator-section">
+            <h3 className="generator-title">Templates</h3>
+            <ul>
+              <li style={{ marginBottom: '0.25rem' }}>
+                <code>famicom.world.sidescroller</code>
+                <span> — params: <code>{JSON.stringify({ scrollSpeed: 120, width: 3000, height: 480 })}</code></span>
+              </li>
+              <li style={{ marginBottom: '0.25rem' }}>
+                <code>famicom.player.soldier</code>
+                <span> — params: <code>{JSON.stringify({ speed: 150, health: 3, weaponType: 'rifle' })}</code></span>
+              </li>
+              <li style={{ marginBottom: '0.25rem' }}>
+                <code>famicom.enemy.alien</code>
+                <span> — params: <code>{JSON.stringify({ speed: 80, damage: 1, shootRate: 2 })}</code></span>
+              </li>
+              <li style={{ marginBottom: '0.25rem' }}>
+                <code>famicom.projectile.bullet</code>
+                <span> — params: <code>{JSON.stringify({ speed: 400, damage: 1 })}</code></span>
+              </li>
+              <li style={{ marginBottom: '0.25rem' }}>
+                <code>famicom.movement.platformer</code>
+                <span> — params: <code>{JSON.stringify({ canShootWhileMoving: true })}</code></span>
+              </li>
+              <li style={{ marginBottom: '0.25rem' }}>
+                <code>famicom.camera.follow</code>
+                <span> — params: <code>{JSON.stringify({ followPlayer: true, smoothing: 0.1 })}</code></span>
+              </li>
+              <li style={{ marginBottom: '0.25rem' }}>
+                <code>famicom.ui.retro</code>
+                <span> — params: <code>{JSON.stringify({ showScore: true, showLives: true, font: 'pixel' })}</code></span>
+              </li>
+            </ul>
+          </section>
+        )}
       </section>
     </div>
   )
