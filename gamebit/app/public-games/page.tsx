@@ -12,7 +12,6 @@ export default function PublicGamesPage() {
   useEffect(() => {
     setSpriteIcons({
       mario: GAME_SPRITE_ICONS.mario(),
-      contra: GAME_SPRITE_ICONS.contra(),
       raiden: GAME_SPRITE_ICONS.raiden(),
       'tank-battle': GAME_SPRITE_ICONS['tank-battle'](),
       'hundred-floors': GAME_SPRITE_ICONS['hundred-floors'](),
@@ -33,15 +32,7 @@ export default function PublicGamesPage() {
       category: 'Rightward Movement',
       available: true
     },
-    {
-      id: 'contra',
-      title: 'Contra', 
-      icon: spriteIcons.contra,
-      description: 'Side-scrolling shooter - two soldiers fight through alien-infested bases',
-      sentence: 'Two brave soldiers run through enemy territory shooting aliens and avoiding deadly bullets',
-      category: 'Upward Movement',
-      available: true
-    },
+
     {
       id: 'raiden',
       title: 'Raiden',

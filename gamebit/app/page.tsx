@@ -10,34 +10,23 @@ export default function Home() {
   const router = useRouter()
 
   const promptExamples = [
-    "A brave knight jumps over dangerous dragons to collect golden treasures",
+    "A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets",
     "Fast spaceship flies through asteroid field shooting alien enemies", 
     "Ninja warrior runs across rooftops avoiding traps and collecting stars"
   ]
 
   const handleGenerate = async () => {
     if (!sentence.trim()) return
+    
     setIsGenerating(true)
-    try {
-      const res = await fetch('/api/compose', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: sentence.trim() })
-      })
-      if (!res.ok) throw new Error('Compose failed')
-      const data = await res.json()
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('compositionPlan', JSON.stringify(data.plan))
-        localStorage.setItem('compositionValidation', JSON.stringify(data.validation))
-        if (data.runtimeOps) localStorage.setItem('runtimeOps', JSON.stringify(data.runtimeOps))
-        if (data.opsValidation) localStorage.setItem('opsValidation', JSON.stringify(data.opsValidation))
-      }
-      router.push('/plan')
-    } catch (e) {
-      console.error(e)
-      setIsGenerating(false)
-      alert('Failed to generate plan')
+    
+    // Store the prompt
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('gamePrompt', sentence.trim())
     }
+    
+    // Navigate to create game page
+    router.push('/create_game')
   }
 
   const handlePromptSelect = (prompt: string) => {

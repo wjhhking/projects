@@ -1,39 +1,38 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 
 interface SavedGame {
   id: number
   sentence: string
   createdAt: string
   thumbnail?: string
+  title?: string
 }
 
 export default function MyGamesPage() {
-  const [savedGames, setSavedGames] = useState<SavedGame[]>([])
   const router = useRouter()
 
-  useEffect(() => {
-    // 从 localStorage 加载保存的游戏
-    const games = JSON.parse(localStorage.getItem('savedGames') || '[]')
-    setSavedGames(games.sort((a: SavedGame, b: SavedGame) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    ))
-  }, [])
+  // Always show MyGame1 (contra game)
+  const savedGames: SavedGame[] = [
+    {
+      id: 1,
+      title: 'MyGame1',
+      sentence: 'A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets',
+      createdAt: new Date().toISOString()
+    }
+  ]
 
-  const handlePlayGame = (sentence: string) => {
-    router.push(`/game?sentence=${encodeURIComponent(sentence)}`)
-  }
-
-  const handleDeleteGame = (gameId: number) => {
-    if (confirm('Are you sure you want to delete this game?')) {
-      const updatedGames = savedGames.filter(game => game.id !== gameId)
-      setSavedGames(updatedGames)
-      localStorage.setItem('savedGames', JSON.stringify(updatedGames))
+  const handlePlayGame = (sentence: string, gameTitle?: string) => {
+    // Check if this is MyGame1 (contra game)
+    if (gameTitle === 'MyGame1' || sentence.includes('brave soldier runs through enemy territory')) {
+      router.push('/mygame1')
+    } else {
+      router.push(`/game?sentence=${encodeURIComponent(sentence)}`)
     }
   }
+
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -58,24 +57,8 @@ export default function MyGamesPage() {
           My Games
         </h1>
 
-        {savedGames.length === 0 ? (
-          <div style={{
-            textAlign: 'center',
-            padding: '4rem 2rem',
-            color: '#64748b'
-          }}>
-            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎮</div>
-            <h2 style={{ fontSize: '1.5rem', marginBottom: '1rem' }}>No games yet</h2>
-            <p style={{ marginBottom: '2rem' }}>
-              Create your first 8-bit game by describing it in one sentence!
-            </p>
-            <Link href="/" className="nav-btn primary">
-              Create Your First Game
-            </Link>
-          </div>
-        ) : (
-          <div className="my-games-grid">
-            {savedGames.map((game) => (
+        <div className="my-games-grid">
+          {savedGames.map((game) => (
               <div key={game.id} className="saved-game-card">
                 <div style={{ 
                   background: '#f1f5f9',
@@ -97,11 +80,25 @@ export default function MyGamesPage() {
                   color: '#1e293b',
                   lineHeight: '1.4'
                 }}>
-                  {game.sentence.length > 60 
+                  {game.title || (game.sentence.length > 60 
                     ? `${game.sentence.substring(0, 60)}...` 
-                    : game.sentence
+                    : game.sentence)
                   }
                 </h3>
+                
+                {game.title && (
+                  <p style={{ 
+                    fontSize: '0.875rem',
+                    color: '#64748b',
+                    marginBottom: '0.5rem',
+                    fontStyle: 'italic'
+                  }}>
+                    {game.sentence.length > 80 
+                      ? `${game.sentence.substring(0, 80)}...` 
+                      : game.sentence
+                    }
+                  </p>
+                )}
                 
                 <p style={{ 
                   fontSize: '0.875rem',
@@ -113,13 +110,13 @@ export default function MyGamesPage() {
                 
                 <div style={{ 
                   display: 'flex',
-                  gap: '0.5rem'
+                  justifyContent: 'center'
                 }}>
                   <button
-                    onClick={() => handlePlayGame(game.sentence)}
+                    onClick={() => handlePlayGame(game.sentence, game.title)}
                     style={{
-                      flex: 1,
-                      padding: '0.5rem 1rem',
+                      width: '100%',
+                      padding: '0.75rem 1rem',
                       background: '#3b82f6',
                       color: 'white',
                       border: 'none',
@@ -132,31 +129,12 @@ export default function MyGamesPage() {
                     onMouseOver={(e) => e.currentTarget.style.background = '#2563eb'}
                     onMouseOut={(e) => e.currentTarget.style.background = '#3b82f6'}
                   >
-                    ▶ Play
-                  </button>
-                  
-                  <button
-                    onClick={() => handleDeleteGame(game.id)}
-                    style={{
-                      padding: '0.5rem',
-                      background: '#ef4444',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '0.375rem',
-                      fontSize: '0.875rem',
-                      cursor: 'pointer',
-                      transition: 'all 0.2s'
-                    }}
-                    onMouseOver={(e) => e.currentTarget.style.background = '#dc2626'}
-                    onMouseOut={(e) => e.currentTarget.style.background = '#ef4444'}
-                  >
-                    🗑️
+                    ▶ Play Game
                   </button>
                 </div>
               </div>
             ))}
-          </div>
-        )}
+        </div>
       </div>
     </div>
   )

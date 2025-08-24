@@ -31,90 +31,80 @@ export default function PlanReviewPage() {
   }
 
   return (
-    <div>
-      <nav className="top-nav">
-        <div className="logo">
-          <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-            🎮 GameBit
-          </Link>
-        </div>
-        <div className="nav-buttons">
-          <Link href="/" className="nav-btn">← Back</Link>
-          <button className={`nav-btn primary`} onClick={handlePlay}>
-            Generate & Play
-          </button>
-        </div>
-      </nav>
-
-      <div className="home-container">
+    <div className="home-container">
+      {plan && (
         <section className="generator-section">
-          <h2 className="generator-title">Composition Plan</h2>
-          {!plan ? (
-            <div>Loading...</div>
-          ) : (
-            <div style={{ display: 'grid', gap: '1rem' }}>
-              <div style={{ display: 'grid', gap: '0.5rem' }}>
-                <div><strong>Title:</strong> {plan.title}</div>
-                {validation && (
-                  <div>
-                    <strong>Plan Status:</strong> {validation.ok ? 'Valid ✅' : 'Invalid ❌'}
-                    {validation.errors.length > 0 && (
-                      <ul style={{ color: '#b91c1c', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {validation.errors.map((e, i) => <li key={i}>{e}</li>)}
-                      </ul>
-                    )}
-                    {validation.warnings.length > 0 && (
-                      <ul style={{ color: '#92400e', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {validation.warnings.map((w, i) => <li key={i}>{w}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                )}
-                {opsValidation && (
-                  <div>
-                    <strong>RuntimeOps Status:</strong> {opsValidation.ok ? 'Valid ✅' : 'Invalid ❌'}
-                    {opsValidation.errors.length > 0 && (
-                      <ul style={{ color: '#b91c1c', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {opsValidation.errors.map((e, i) => <li key={i}>{e}</li>)}
-                      </ul>
-                    )}
-                    {opsValidation.warnings.length > 0 && (
-                      <ul style={{ color: '#92400e', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {opsValidation.warnings.map((w, i) => <li key={i}>{w}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+          <h2 className="generator-title">Preview</h2>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+            <PhaserPreview plan={plan} width={800} height={480} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
+            <Link href="/" className="nav-btn">← Back</Link>
+            <button className={`nav-btn primary`} onClick={handlePlay}>
+              Generate & Play
+            </button>
+          </div>
         </section>
+      )}
 
-        {plan && (
-          <section className="generator-section">
-            <h3 className="generator-title">Templates</h3>
-            <ul>
-              {plan.templates.map((t, i) => (
-                <li key={i} style={{ marginBottom: '0.25rem' }}>
-                  <code>{t.id}</code>
-                  {t.params && (
-                    <span> — params: <code>{JSON.stringify(t.params)}</code></span>
+      <section className="generator-section">
+        <h2 className="generator-title">Composition Plan</h2>
+        {!plan ? (
+          <div>Loading...</div>
+        ) : (
+          <div style={{ display: 'grid', gap: '1rem' }}>
+            <div style={{ display: 'grid', gap: '0.5rem' }}>
+              <div><strong>Title:</strong> {plan.title}</div>
+              {validation && (
+                <div>
+                  <strong>Plan Status:</strong> {validation.ok ? 'Valid ✅' : 'Invalid ❌'}
+                  {validation.errors.length > 0 && (
+                    <ul style={{ color: '#b91c1c', marginTop: '0.5rem', marginLeft: '1rem' }}>
+                      {validation.errors.map((e, i) => <li key={i}>{e}</li>)}
+                    </ul>
                   )}
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {plan && (
-          <section className="generator-section">
-            <h3 className="generator-title">Preview</h3>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <PhaserPreview plan={plan} width={800} height={480} />
+                  {validation.warnings.length > 0 && (
+                    <ul style={{ color: '#92400e', marginTop: '0.5rem', marginLeft: '1rem' }}>
+                      {validation.warnings.map((w, i) => <li key={i}>{w}</li>)}
+                    </ul>
+                  )}
+                </div>
+              )}
+              {opsValidation && (
+                <div>
+                  <strong>RuntimeOps Status:</strong> {opsValidation.ok ? 'Valid ✅' : 'Invalid ❌'}
+                  {opsValidation.errors.length > 0 && (
+                    <ul style={{ color: '#b91c1c', marginTop: '0.5rem', marginLeft: '1rem' }}>
+                      {opsValidation.errors.map((e, i) => <li key={i}>{e}</li>)}
+                    </ul>
+                  )}
+                  {opsValidation.warnings.length > 0 && (
+                    <ul style={{ color: '#92400e', marginTop: '0.5rem', marginLeft: '1rem' }}>
+                      {opsValidation.warnings.map((w, i) => <li key={i}>{w}</li>)}
+                    </ul>
+                  )}
+                </div>
+              )}
             </div>
-          </section>
+          </div>
         )}
-      </div>
+      </section>
+
+      {plan && (
+        <section className="generator-section">
+          <h3 className="generator-title">Templates</h3>
+          <ul>
+            {plan.templates.map((t, i) => (
+              <li key={i} style={{ marginBottom: '0.25rem' }}>
+                <code>{t.id}</code>
+                {t.params && (
+                  <span> — params: <code>{JSON.stringify(t.params)}</code></span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   )
 }
