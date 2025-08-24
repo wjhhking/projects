@@ -162,38 +162,48 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
             const cursors = scene.input.keyboard?.createCursorKeys()!
             console.debug('[preview] cursors created:', !!cursors)
 
-            const hasTetris = hasSystem('tetrisCore')
-            const hasLineClear = hasSystem('lineClear')
-            const hasSpawnTetromino = systems.some(s => s.type.includes('tetromino') || s.type.includes('spawn'))
+            // Simple game detection based on key system types
+            const systemTypesList = systems.map(s => s.type)
             
-            console.log('🎮 GAME DETECTION:', { 
-              hasTetris, 
-              hasLineClear, 
-              hasSpawnTetromino,
-              systemTypes: systems.map(s => s.type)
+            // Check for specific Tetris indicators
+            const isTetris = systemTypesList.some(type => 
+              type.includes('tetromino') || 
+              type.includes('lineClear') || 
+              type === 'tetrisCore'
+            )
+            
+            // Check for specific Snake indicators  
+            const isSnake = !isTetris && systemTypesList.some(type =>
+              type.includes('snakeBody') ||
+              type.includes('actor.snake') ||
+              type.includes('foodUniform') ||
+              type.includes('growthOnEat')
+            )
+
+            console.log('🎮 SIMPLE GAME DETECTION:', { 
+              systemTypes: systemTypesList,
+              isTetris,
+              isSnake
             })
 
-            // Detect Tetris by multiple indicators
-            const isTetris = hasTetris || hasLineClear || hasSpawnTetromino || 
-                           systems.some(s => s.type.includes('tetromino') || s.type.includes('lineClear'))
-
-            if (!isTetris && (hasSystem('gridStep') || hasSystem('spawnFood') || hasSystem('collectOnOverlap'))) {
-              console.debug('[preview] running Snake-like game')
-              runSnakeLike(scene, ops!, scale, wrapEdges)
-            }
-
-            if (isTetris) {
+            if (isSnake) {
+              console.log('🐍 RUNNING SNAKE GAME')
+              runSnakeLike(scene, ops!, scale, wrapEdges, { keys, hasSystem, getSystems })
+            } else if (isTetris) {
               console.log('🎮 RUNNING TETRIS GAME')
               runTetris(scene, ops!, scale, { keys, hasSystem, getSystems })
             } else {
-              console.log('🎮 TETRIS NOT DETECTED')
-            }
-            
-            if (!isTetris && !hasSystem('gridStep') && !hasSystem('spawnFood')) {
-              console.debug('[preview] no specific game detected, showing generic preview')
+              console.log('❓ NO SPECIFIC GAME DETECTED, showing generic preview')
             }
 
-            const info = [`World ${cols}x${rows} t=${tileSize}`, `Systems: ${systems.map(s => s.type).join(', ')}`, 'Controls: ← → move, ↑ rotate, ↓ soft drop']
+            let controlsText = 'Controls: Arrow keys'
+            if (isTetris) {
+              controlsText = 'Controls: ← → move, ↑ rotate, ↓ soft drop'
+            } else if (isSnake) {
+              controlsText = 'Controls: ← → ↑ ↓ change direction'
+            }
+            
+            const info = [`World ${cols}x${rows} t=${tileSize}`, `Systems: ${systems.map(s => s.type).join(', ')}`, controlsText]
             scene.add.text(12, 12, info.join('\n'), { fontFamily: 'monospace', fontSize: '12px', color: '#ffffff' })
           }
         }
@@ -238,31 +248,103 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
   )
 }
 
-function runSnakeLike(scene: import('phaser').Scene, ops: RuntimeOps, scale: number, wrapEdges: boolean | undefined) {
+function runSnakeLike(scene: import('phaser').Scene, ops: RuntimeOps, scale: number, wrapEdges: boolean | undefined, ctx: { keys: any; hasSystem: (t: string) => boolean; getSystems: (t: string) => any[] }) {
+  console.log('🐍 SNAKE SETUP STARTING')
   const { tileSize, width: cols, height: rows } = ops.world
   const Phaser = PhaserLib!
-  const cursors = scene.input.keyboard?.createCursorKeys()!
 
-  let axis = { x: 0, y: 0 }
-  scene.events.on('update', () => {
-    const left = cursors?.left.isDown
-    const right = cursors?.right.isDown
-    const up = cursors?.up.isDown
-    const down = cursors?.down.isDown
-    axis.x = (left ? -1 : 0) + (right ? 1 : 0)
-    axis.y = (up ? -1 : 0) + (down ? 1 : 0)
-    if (Math.abs(axis.x) > Math.abs(axis.y)) axis.y = 0
-    else if (Math.abs(axis.y) > Math.abs(axis.x)) axis.x = 0
-  })
+  // Get snake entity data from RuntimeOps
+  const snakeEntity = ops.entities?.find(e => e.id === 'e.snake' || e.name === 'Snake')
+  let startX = Math.floor(cols / 2)
+  let startY = Math.floor(rows / 2)
+  let startLength = 4
+  let snakeColor = 0x34d399
 
-  const player = scene.add.rectangle(Math.floor(Math.floor(cols / 2) * tileSize * scale), Math.floor(Math.floor(rows / 2) * tileSize * scale), Math.ceil(tileSize * scale), Math.ceil(tileSize * scale), 0x34d399)
+  if (snakeEntity) {
+    // Use type assertion to access dynamic properties
+    const posComponent = snakeEntity.components.find(c => (c as any).gridPosition || (c as any).position)
+    if (posComponent) {
+      const pos = (posComponent as any).gridPosition || (posComponent as any).position
+      startX = pos.x || startX
+      startY = pos.y || startY
+    }
+    
+    const bodyComponent = snakeEntity.components.find(c => (c as any).snakeBody || (c as any).SnakeBody)
+    if (bodyComponent) {
+      const body = (bodyComponent as any).snakeBody || (bodyComponent as any).SnakeBody
+      startLength = body.length || body.segments || startLength
+      if (body.color) {
+        snakeColor = parseInt(body.color.replace('#', '0x'))
+      }
+    }
+  }
+
+  console.log('🐍 SNAKE INIT:', { startX, startY, startLength, snakeColor: snakeColor.toString(16) })
+
+  let axis = { x: 1, y: 0 } // Start moving right
+  let lastAxis = { x: 1, y: 0 }
+  
+  // Update direction based on key input
+  const updateDirection = () => {
+    const left = ctx.keys.left
+    const right = ctx.keys.right
+    const up = ctx.keys.up
+    const down = ctx.keys.down
+    
+    if (left && lastAxis.x !== 1) { axis.x = -1; axis.y = 0 }
+    else if (right && lastAxis.x !== -1) { axis.x = 1; axis.y = 0 }
+    else if (up && lastAxis.y !== 1) { axis.x = 0; axis.y = -1 }
+    else if (down && lastAxis.y !== -1) { axis.x = 0; axis.y = 1 }
+    
+    if (left || right || up || down) {
+      console.log('🐍 SNAKE DIRECTION:', { left, right, up, down, axis })
+    }
+  }
+
+  // Create snake head
+  const player = scene.add.rectangle(
+    Math.floor(startX * tileSize * scale), 
+    Math.floor(startY * tileSize * scale), 
+    Math.ceil(tileSize * scale), 
+    Math.ceil(tileSize * scale), 
+    snakeColor
+  )
   player.setOrigin(0, 0)
 
   const tailRects: import('phaser').GameObjects.Rectangle[] = []
   let tailPositions: Array<{ x: number; y: number }> = []
+  
+  // Initialize snake with starting length
+  for (let i = 1; i < startLength; i++) {
+    tailPositions.push({ x: startX - i, y: startY })
+  }
 
-  const stepMs = 120
+  // Add food
+  let food: import('phaser').GameObjects.Rectangle | null = null
+  const spawnFood = () => {
+    if (food) food.destroy()
+    
+    let fx: number, fy: number
+    let attempts = 0
+    do {
+      fx = Math.floor(Math.random() * cols)
+      fy = Math.floor(Math.random() * rows)
+      attempts++
+    } while (attempts < 50 && (
+      (fx === Math.round(player.x / (tileSize * scale)) && fy === Math.round(player.y / (tileSize * scale))) ||
+      tailPositions.some(tp => tp.x === fx && tp.y === fy)
+    ))
+    
+    food = scene.add.rectangle(fx * tileSize * scale, fy * tileSize * scale, Math.ceil(tileSize * scale), Math.ceil(tileSize * scale), 0xff6b6b)
+    food.setOrigin(0, 0)
+    console.log('🐍 FOOD SPAWNED:', { fx, fy })
+  }
+  spawnFood()
+
+  const stepMs = 150
   scene.time.addEvent({ delay: stepMs, loop: true, callback: () => {
+    updateDirection()
+    
     let px = Math.round(player.x / (tileSize * scale))
     let py = Math.round(player.y / (tileSize * scale))
     let nx = px + axis.x
@@ -272,25 +354,60 @@ function runSnakeLike(scene: import('phaser').Scene, ops: RuntimeOps, scale: num
       nx = (nx + cols) % cols
       ny = (ny + rows) % rows
     } else if (nx < 0 || nx >= cols || ny < 0 || ny >= rows) {
+      console.log('🐍 COLLISION WITH WALL - RESET')
       tailPositions = []
       tailRects.forEach(r => r.destroy())
       tailRects.length = 0
       nx = Math.floor(cols / 2)
       ny = Math.floor(rows / 2)
+      axis = { x: 0, y: 0 }
+      lastAxis = { x: 0, y: 0 }
     }
 
+    // Check food collision
+    if (food) {
+      const fx = Math.round(food.x / (tileSize * scale))
+      const fy = Math.round(food.y / (tileSize * scale))
+      if (nx === fx && ny === fy) {
+        console.log('🐍 FOOD EATEN - GROWING')
+        tailPositions.push({ x: px, y: py })
+        spawnFood()
+      }
+    }
+
+    // Move tail
     if (tailPositions.length > 0) {
       for (let i = tailPositions.length - 1; i > 0; i--) tailPositions[i] = { ...tailPositions[i - 1] }
       tailPositions[0] = { x: px, y: py }
     }
 
+    // Check self collision
+    for (const tp of tailPositions) {
+      if (nx === tp.x && ny === tp.y) {
+        console.log('🐍 SELF COLLISION - RESET')
+        tailPositions = []
+        tailRects.forEach(r => r.destroy())
+        tailRects.length = 0
+        nx = Math.floor(cols / 2)
+        ny = Math.floor(rows / 2)
+        axis = { x: 0, y: 0 }
+        lastAxis = { x: 0, y: 0 }
+        break
+      }
+    }
+
     player.x = Math.floor(nx * tileSize * scale)
     player.y = Math.floor(ny * tileSize * scale)
+    lastAxis = { ...axis }
 
+    // Update tail visuals
     while (tailRects.length < tailPositions.length) {
       const seg = scene.add.rectangle(0, 0, Math.ceil(tileSize * scale), Math.ceil(tileSize * scale), 0x10b981)
       seg.setOrigin(0, 0)
       tailRects.push(seg)
+    }
+    while (tailRects.length > tailPositions.length) {
+      tailRects.pop()?.destroy()
     }
     tailRects.forEach((r, i) => {
       const tp = tailPositions[i]
