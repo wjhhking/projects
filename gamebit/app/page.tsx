@@ -28,9 +28,7 @@ export default function Home() {
       const data = await res.json()
       if (typeof window !== 'undefined') {
         localStorage.setItem('compositionPlan', JSON.stringify(data.plan))
-        localStorage.setItem('compositionValidation', JSON.stringify(data.validation))
         if (data.runtimeOps) localStorage.setItem('runtimeOps', JSON.stringify(data.runtimeOps))
-        if (data.opsValidation) localStorage.setItem('opsValidation', JSON.stringify(data.opsValidation))
       }
       router.push('/plan')
     } catch (e) {

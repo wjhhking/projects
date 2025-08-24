@@ -10,20 +10,11 @@ const PhaserPreview = dynamic(() => import('@/components/PhaserPreview'), { ssr:
 
 export default function PlanReviewPage() {
   const [plan, setPlan] = useState<CompositionPlan | null>(null)
-  const [validation, setValidation] = useState<{ ok: boolean; errors: string[]; warnings: string[] } | null>(null)
-  const [runtimeOps, setRuntimeOps] = useState<any | null>(null)
-  const [opsValidation, setOpsValidation] = useState<{ ok: boolean; errors: string[]; warnings: string[] } | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     const p = typeof window !== 'undefined' ? localStorage.getItem('compositionPlan') : null
-    const v = typeof window !== 'undefined' ? localStorage.getItem('compositionValidation') : null
-    const o = typeof window !== 'undefined' ? localStorage.getItem('runtimeOps') : null
-    const ov = typeof window !== 'undefined' ? localStorage.getItem('opsValidation') : null
     if (p) setPlan(JSON.parse(p))
-    if (v) setValidation(JSON.parse(v))
-    if (o) setRuntimeOps(JSON.parse(o))
-    if (ov) setOpsValidation(JSON.parse(ov))
   }, [])
 
   const handlePlay = () => {
@@ -55,36 +46,6 @@ export default function PlanReviewPage() {
             <div style={{ display: 'grid', gap: '1rem' }}>
               <div style={{ display: 'grid', gap: '0.5rem' }}>
                 <div><strong>Title:</strong> {plan.title}</div>
-                {validation && (
-                  <div>
-                    <strong>Plan Status:</strong> {validation.ok ? 'Valid ✅' : 'Invalid ❌'}
-                    {validation.errors.length > 0 && (
-                      <ul style={{ color: '#b91c1c', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {validation.errors.map((e, i) => <li key={i}>{e}</li>)}
-                      </ul>
-                    )}
-                    {validation.warnings.length > 0 && (
-                      <ul style={{ color: '#92400e', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {validation.warnings.map((w, i) => <li key={i}>{w}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                )}
-                {opsValidation && (
-                  <div>
-                    <strong>RuntimeOps Status:</strong> {opsValidation.ok ? 'Valid ✅' : 'Invalid ❌'}
-                    {opsValidation.errors.length > 0 && (
-                      <ul style={{ color: '#b91c1c', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {opsValidation.errors.map((e, i) => <li key={i}>{e}</li>)}
-                      </ul>
-                    )}
-                    {opsValidation.warnings.length > 0 && (
-                      <ul style={{ color: '#92400e', marginTop: '0.5rem', marginLeft: '1rem' }}>
-                        {opsValidation.warnings.map((w, i) => <li key={i}>{w}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                )}
               </div>
             </div>
           )}
