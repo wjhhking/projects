@@ -26,8 +26,16 @@ export interface EntityOp {
   components: ComponentOp[]
 }
 
+export interface RuntimeOpsMetadata {
+  title?: string
+  description?: string
+  generatedAt?: string
+  [key: string]: any
+}
+
 export interface RuntimeOps {
   world: WorldGridConfig
   systems: SystemOp[]
-  entities: EntityOp[]
+  entities?: EntityOp[]
+  metadata?: RuntimeOpsMetadata
 }

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clear-cache": "node clear-cache.js",
+    "test-game": "node test-game.js"
   },
   "dependencies": {
     "next": "14.0.0",

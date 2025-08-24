@@ -32,7 +32,7 @@ function normalizeOps(ops: RuntimeOps): RuntimeOps {
   return normalized
 }
 
-export default function PhaserPreview({ plan, width = 800, height = 480 }: { plan: CompositionPlan; width?: number; height?: number }) {
+export default function PhaserPreview({ runtimeOps: providedOps, plan, width = 800, height = 480 }: { runtimeOps?: RuntimeOps; plan?: CompositionPlan; width?: number; height?: number }) {
   const containerRef = useRef<HTMLDivElement | null>(null)
   const gameRef = useRef<import('phaser').Game | null>(null)
 
@@ -72,13 +72,17 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
 
       const Phaser = PhaserLib!
 
-      // Prefer LLM-provided runtimeOps if present
-      let ops: RuntimeOps | null = null
-      if (typeof window !== 'undefined') {
+      // Use provided runtimeOps first, then localStorage, then build from plan
+      let ops: RuntimeOps | null = providedOps || null
+      if (!ops && typeof window !== 'undefined') {
         const saved = localStorage.getItem('runtimeOps')
         if (saved) ops = JSON.parse(saved)
       }
-      if (!ops) ops = buildRuntimeOps(plan)
+      if (!ops && plan) ops = buildRuntimeOps(plan)
+      if (!ops) {
+        console.error('[preview] No runtimeOps available')
+        return
+      }
       ops = normalizeOps(ops)
 
       try { console.debug('[preview] runtimeOps systems:', ops.systems.map(s => s.type)) } catch {}
@@ -173,17 +177,28 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
             )
             
             // Check for specific Snake indicators  
-            const isSnake = !isTetris && systemTypesList.some(type =>
-              type.includes('snakeBody') ||
-              type.includes('actor.snake') ||
-              type.includes('foodUniform') ||
-              type.includes('growthOnEat')
+            const isSnake = !isTetris && (
+              systemTypesList.some(type =>
+                type.includes('snakeBody') ||
+                type.includes('actor.snake') ||
+                type.includes('foodUniform') ||
+                type.includes('growthOnEat') ||
+                type.includes('snakeMovement') ||
+                type.includes('foodSpawner')
+              ) ||
+              // Also check if we have snake entities
+              ops!.entities?.some(e => 
+                e.id === 'snake' || 
+                e.name?.toLowerCase().includes('snake') ||
+                e.components.some(c => (c as any).type === 'Snake')
+              )
             )
 
             console.log('🎮 SIMPLE GAME DETECTION:', { 
               systemTypes: systemTypesList,
               isTetris,
-              isSnake
+              isSnake,
+              entities: ops!.entities?.map(e => ({ id: e.id, name: e.name, componentTypes: e.components.map(c => (c as any).type) }))
             })
 
             if (isSnake) {
@@ -227,7 +242,7 @@ export default function PhaserPreview({ plan, width = 800, height = 480 }: { pla
       }
       if (containerRef.current) containerRef.current.innerHTML = ''
     }
-  }, [plan, width, height])
+  }, [providedOps, plan, width, height])
 
   return (
     <div 
@@ -254,32 +269,100 @@ function runSnakeLike(scene: import('phaser').Scene, ops: RuntimeOps, scale: num
   const Phaser = PhaserLib!
 
   // Get snake entity data from RuntimeOps
-  const snakeEntity = ops.entities?.find(e => e.id === 'e.snake' || e.name === 'Snake')
+  const snakeEntity = ops.entities?.find(e => 
+    e.id === 'snake' || 
+    e.id === 'e.snake' || 
+    e.name === 'Snake' ||
+    e.components.some(c => (c as any).type === 'Snake')
+  )
   let startX = Math.floor(cols / 2)
   let startY = Math.floor(rows / 2)
   let startLength = 4
   let snakeColor = 0x34d399
 
   if (snakeEntity) {
-    // Use type assertion to access dynamic properties
-    const posComponent = snakeEntity.components.find(c => (c as any).gridPosition || (c as any).position)
+    console.log('🐍 Found snake entity:', snakeEntity)
+    
+    // Look for position component - handle different structures
+    const posComponent = snakeEntity.components.find(c => 
+      (c as any).type === 'GridPosition' || 
+      (c as any).gridPosition || 
+      (c as any).position ||
+      ('x' in c && 'y' in c)
+    )
+    
     if (posComponent) {
-      const pos = (posComponent as any).gridPosition || (posComponent as any).position
-      startX = pos.x || startX
-      startY = pos.y || startY
+      const pos = (posComponent as any)
+      // Handle different position structures
+      if (pos.type === 'GridPosition') {
+        startX = pos.x || startX
+        startY = pos.y || startY
+      } else if (pos.gridPosition) {
+        startX = pos.gridPosition.x || startX
+        startY = pos.gridPosition.y || startY
+      } else if (pos.position) {
+        startX = pos.position.x || startX
+        startY = pos.position.y || startY
+      } else if ('x' in pos && 'y' in pos) {
+        startX = pos.x || startX
+        startY = pos.y || startY
+      }
     }
     
-    const bodyComponent = snakeEntity.components.find(c => (c as any).snakeBody || (c as any).SnakeBody)
+    // Look for snake body component
+    const bodyComponent = snakeEntity.components.find(c => 
+      (c as any).type === 'Snake' ||
+      (c as any).snakeBody || 
+      (c as any).SnakeBody
+    )
+    
     if (bodyComponent) {
-      const body = (bodyComponent as any).snakeBody || (bodyComponent as any).SnakeBody
-      startLength = body.length || body.segments || startLength
-      if (body.color) {
-        snakeColor = parseInt(body.color.replace('#', '0x'))
+      const body = bodyComponent as any
+      if (body.type === 'Snake') {
+        // Handle LLM-generated Snake component
+        if (body.segments && Array.isArray(body.segments)) {
+          startLength = body.segments.length
+        }
+      } else {
+        // Handle legacy formats
+        const bodyData = body.snakeBody || body.SnakeBody
+        startLength = bodyData.length || bodyData.segments?.length || startLength
+      }
+    }
+    
+    // Look for renderable/color component
+    const renderComponent = snakeEntity.components.find(c => 
+      (c as any).type === 'Renderable' ||
+      (c as any).color ||
+      (c as any).colorHead
+    )
+    
+    if (renderComponent) {
+      const render = renderComponent as any
+      if (render.colorHead) {
+        try {
+          snakeColor = parseInt(render.colorHead.replace('#', '0x'))
+        } catch (e) {
+          console.warn('Failed to parse snake color:', render.colorHead)
+        }
+      } else if (render.color) {
+        try {
+          snakeColor = parseInt(render.color.replace('#', '0x'))
+        } catch (e) {
+          console.warn('Failed to parse snake color:', render.color)
+        }
       }
     }
   }
 
-  console.log('🐍 SNAKE INIT:', { startX, startY, startLength, snakeColor: snakeColor.toString(16) })
+  console.log('🐍 SNAKE INIT:', { 
+    startX, 
+    startY, 
+    startLength, 
+    snakeColor: snakeColor.toString(16),
+    foundEntity: !!snakeEntity,
+    entityId: snakeEntity?.id
+  })
 
   let axis = { x: 1, y: 0 } // Start moving right
   let lastAxis = { x: 1, y: 0 }
