@@ -37,40 +37,49 @@ export default function Home() {
     setIsGenerating(true)
     
     try {
-      // Call LLM API first
-      const response = await fetch('/api/compose', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ prompt: sentence.trim() }),
-      })
-      
-      if (!response.ok) {
-        throw new Error(`API call failed: ${response.status}`)
-      }
-      
-      const { runtimeOps } = await response.json()
-      console.log('✅ LLM generated runtimeOps')
-      
-      // Store the generated data directly in localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('runtimeOps', JSON.stringify(runtimeOps))
-        
-        // Save to My Games
-        const savedGames = JSON.parse(localStorage.getItem('savedGames') || '[]')
-        const newGame = {
-          id: Date.now(),
-          sentence: runtimeOps.metadata?.description || sentence.trim(),
-          createdAt: new Date().toISOString(),
-          title: runtimeOps.metadata?.title || 'Generated Game'
+      if (selectedEngine === 'Famicom') {
+        // Famicom: Use create_game flow
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('gamePrompt', sentence.trim())
+          localStorage.setItem('selectedEngine', selectedEngine)
         }
-        savedGames.push(newGame)
-        localStorage.setItem('savedGames', JSON.stringify(savedGames))
+        router.push('/create_game')
+      } else {
+        // Phaser: Use original API flow
+        const response = await fetch('/api/compose', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ prompt: sentence.trim() }),
+        })
+        
+        if (!response.ok) {
+          throw new Error(`API call failed: ${response.status}`)
+        }
+        
+        const { runtimeOps } = await response.json()
+        console.log('✅ LLM generated runtimeOps')
+        
+        // Store the generated data directly in localStorage
+        if (typeof window !== 'undefined') {
+          localStorage.setItem('runtimeOps', JSON.stringify(runtimeOps))
+          
+          // Save to My Games
+          const savedGames = JSON.parse(localStorage.getItem('savedGames') || '[]')
+          const newGame = {
+            id: Date.now(),
+            sentence: runtimeOps.metadata?.description || sentence.trim(),
+            createdAt: new Date().toISOString(),
+            title: runtimeOps.metadata?.title || 'Generated Game'
+          }
+          savedGames.push(newGame)
+          localStorage.setItem('savedGames', JSON.stringify(savedGames))
+        }
+        
+        // Navigate to plan page after successful generation and storage
+        router.push('/plan')
       }
-      
-      // Navigate to plan page after successful generation and storage
-      router.push('/plan')
     } catch (error) {
       console.error('Failed to generate game:', error)
       alert('Failed to generate game. Please try again.')
