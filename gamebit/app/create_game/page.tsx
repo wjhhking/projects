@@ -3,62 +3,39 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
-import type { CompositionPlan } from '@/lib/composition'
 
-const PhaserPreview = dynamic(() => import('@/components/PhaserPreview'), { ssr: false })
 const GameCanvas = dynamic(() => import('@/components/GameCanvas'), { ssr: false })
 
 type GenerationStage = 'none' | 'plan' | 'implementation' | 'complete'
 
-const knightGamePlan: CompositionPlan = {
-  planVersion: '1.0',
-  title: 'MyGame1',
-  description: 'A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets',
-  targetRuntime: 'phaser',
-  templates: [
-    { id: 'mt.world.sidescroller', params: { scrollSpeed: 120, width: 3000, height: 600 } },
-    { id: 'mt.player.soldier', params: { speed: 180, health: 3, weaponType: 'rifle' } },
-    { id: 'mt.enemy.alien', params: { speed: 80, damage: 1, shootRate: 2 } },
-    { id: 'mt.projectile.bullet', params: { speed: 400, damage: 1 } },
-    { id: 'mt.movement.runShoot', params: { canShootWhileMoving: true } },
-    { id: 'mt.camera.sidescroll', params: { followPlayer: true, smoothing: 0.1 } },
-    { id: 'mt.ui.hudBasic', params: { showScore: true, showLives: true, font: 'PressStart2P' } }
-  ],
-  assets: {
-    sprites: {
-      soldier: { src: '/sprites/soldier.png', kind: 'spritesheet', frames: 8 },
-      alien: { src: '/sprites/alien.png', kind: 'spritesheet', frames: 4 },
-      bullet: { src: '/sprites/bullet.png', kind: 'sprite' },
-      platform: { src: '/sprites/platform.png', kind: 'sprite' }
-    },
-    sounds: {
-      shoot: { src: '/sounds/shoot.wav' },
-      enemy_hit: { src: '/sounds/hit.wav' },
-      alien_death: { src: '/sounds/alien.wav' }
-    }
-  },
-  controls: {
-    scheme: 'keyboard',
-    actions: {
-      moveLeft: 'ArrowLeft',
-      moveRight: 'ArrowRight',
-      shoot: 'Space',
-      jump: 'ArrowUp'
-    }
-  },
-  conflictPolicy: { strategy: 'priority', tieBreak: 'error', allowUnsafe: false }
+interface GameData {
+  id: string
+  name: string
+  description: string
+  engine: string
+  gameType: string
+  createdAt: string
+  thumbnail: string
+  controls: string
 }
 
 export default function CreateGamePage() {
   const [prompt, setPrompt] = useState<string>('')
+  const [engine, setEngine] = useState<string>('Famicom')
   const [stage, setStage] = useState<GenerationStage>('none')
   const [progress, setProgress] = useState(0)
+  const [gameData, setGameData] = useState<GameData | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     const savedPrompt = typeof window !== 'undefined' ? localStorage.getItem('gamePrompt') : null
+    const savedEngine = typeof window !== 'undefined' ? localStorage.getItem('selectedEngine') : null
+    
     if (savedPrompt) {
       setPrompt(savedPrompt)
+      if (savedEngine) {
+        setEngine(savedEngine)
+      }
       startGeneration()
     }
   }, [])
@@ -105,26 +82,37 @@ export default function CreateGamePage() {
     setStage('complete')
     setProgress(100)
     
-    // Store the generated plan
+    // Generate game data
+    const gameId = `mygame${Date.now()}`
+    const newGameData: GameData = {
+      id: gameId,
+      name: prompt.length > 50 ? `${prompt.substring(0, 50)}...` : prompt,
+      description: prompt,
+      engine: engine,
+      gameType: engine === 'Famicom' ? 'contra' : 'phaser',
+      createdAt: new Date().toISOString(),
+      thumbnail: '🎮',
+      controls: 'Use arrow keys to move, Space to shoot'
+    }
+    
+    setGameData(newGameData)
+    
+    // Save to localStorage
     if (typeof window !== 'undefined') {
-      localStorage.setItem('compositionPlan', JSON.stringify(knightGamePlan))
-      localStorage.setItem('compositionValidation', JSON.stringify({ ok: true, errors: [], warnings: [] }))
+      const savedGames = JSON.parse(localStorage.getItem('generatedGames') || '[]')
+      savedGames.push(newGameData)
+      localStorage.setItem('generatedGames', JSON.stringify(savedGames))
       
-      // Save to My Games
-      const savedGames = JSON.parse(localStorage.getItem('savedGames') || '[]')
-      const newGame = {
-        id: Date.now(),
-        sentence: knightGamePlan.description,
-        createdAt: new Date().toISOString(),
-        title: knightGamePlan.title
-      }
-      savedGames.push(newGame)
-      localStorage.setItem('savedGames', JSON.stringify(savedGames))
+      // Clear temporary data
+      localStorage.removeItem('gamePrompt')
+      localStorage.removeItem('selectedEngine')
     }
   }
 
   const handlePlayGame = () => {
-    router.push('/play')
+    if (gameData) {
+      router.push(`/play_game?id=${gameData.id}`)
+    }
   }
 
   const getStageText = () => {
@@ -159,6 +147,16 @@ export default function CreateGamePage() {
               "{prompt}"
             </p>
           )}
+          {engine && (
+            <p style={{
+              fontSize: '1rem',
+              color: '#3b82f6',
+              marginBottom: '1rem',
+              fontWeight: '500'
+            }}>
+              Engine: {engine}
+            </p>
+          )}
         </div>
 
         {/* Project Status */}
@@ -174,6 +172,25 @@ export default function CreateGamePage() {
             <div style={{ fontSize: '1.25rem', fontWeight: '600', marginBottom: '1.5rem' }}>
               {getStageText()}
             </div>
+            
+            {/* Progress Bar */}
+            {stage !== 'none' && stage !== 'complete' && (
+              <div style={{
+                width: '100%',
+                height: '8px',
+                backgroundColor: '#e2e8f0',
+                borderRadius: '4px',
+                marginBottom: '1.5rem',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  width: `${progress}%`,
+                  height: '100%',
+                  backgroundColor: '#3b82f6',
+                  transition: 'width 0.1s ease'
+                }} />
+              </div>
+            )}
             
             {/* TODO List */}
             <div style={{ display: 'grid', gap: '0.5rem', fontSize: '0.875rem', textAlign: 'left' }}>
@@ -208,46 +225,30 @@ export default function CreateGamePage() {
           </div>
         </div>
 
-        {/* Plan Section - appears after planning stage */}
-        {(stage === 'implementation' || stage === 'complete') && (
+        {/* Game Details - appears after planning stage */}
+        {gameData && (stage === 'implementation' || stage === 'complete') && (
           <div style={{ marginBottom: '3rem' }}>
-            <h2 className="generator-title">Composition Plan</h2>
+            <h2 className="generator-title">Game Details</h2>
             <div style={{ display: 'grid', gap: '1rem' }}>
               <div style={{ display: 'grid', gap: '0.5rem' }}>
-                <div><strong>Title:</strong> {knightGamePlan.title}</div>
-                <div><strong>Description:</strong> {knightGamePlan.description}</div>
+                <div><strong>Title:</strong> {gameData.name}</div>
+                <div><strong>Description:</strong> {gameData.description}</div>
+                <div><strong>Engine:</strong> {gameData.engine}</div>
                 <div><strong>Status:</strong> Valid ✅</div>
               </div>
             </div>
           </div>
         )}
 
-        {/* Templates Section - appears after planning stage */}
-        {(stage === 'implementation' || stage === 'complete') && (
-          <div style={{ marginBottom: '3rem' }}>
-            <h3 className="generator-title">Templates</h3>
-            <ul>
-              {knightGamePlan.templates.map((t, i) => (
-                <li key={i} style={{ marginBottom: '0.25rem' }}>
-                  <code>{t.id}</code>
-                  {t.params && (
-                    <span> — params: <code>{JSON.stringify(t.params)}</code></span>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
         {/* Preview */}
         <div>
           <h2 className="generator-title">Preview</h2>
-          {stage === 'complete' ? (
+          {stage === 'complete' && gameData ? (
             <div>
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
                 <GameCanvas 
-                  sentence={knightGamePlan.description} 
-                  gameType="contra" 
+                  sentence={gameData.description} 
+                  gameType={gameData.gameType as 'mario' | 'contra' | 'raiden' | 'tank-battle' | 'hundred-floors' | 'custom'} 
                 />
               </div>
               <div style={{ display: 'flex', justifyContent: 'center', gap: '1rem' }}>
@@ -256,6 +257,12 @@ export default function CreateGamePage() {
                   className="nav-btn"
                 >
                   ← Back to Home
+                </button>
+                <button 
+                  onClick={() => router.push('/my-games')}
+                  className="nav-btn"
+                >
+                  My Games
                 </button>
                 <button 
                   onClick={handlePlayGame}

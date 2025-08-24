@@ -1,36 +1,96 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 interface SavedGame {
-  id: number
-  sentence: string
+  id: string
+  name: string
+  description: string
+  engine: string
+  gameType: string
   createdAt: string
-  thumbnail?: string
-  title?: string
+  thumbnail: string
+  controls: string
+  completed?: boolean
 }
 
 export default function MyGamesPage() {
   const router = useRouter()
+  const [savedGames, setSavedGames] = useState<SavedGame[]>([])
 
-  // Always show MyGame1 (contra game)
-  const savedGames: SavedGame[] = [
-    {
-      id: 1,
-      title: 'MyGame1',
-      sentence: 'A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets',
-      createdAt: new Date().toISOString()
+  useEffect(() => {
+    // Load games from localStorage
+    if (typeof window !== 'undefined') {
+      const storedGames = localStorage.getItem('generatedGames')
+      
+      // Hardcoded Contra game
+      const contraGame: SavedGame = {
+        id: 'contra-classic',
+        name: 'Brave Soldier',
+        description: 'A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets',
+        engine: 'Famicom',
+        gameType: 'contra',
+        createdAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
+        thumbnail: '🎮',
+        controls: 'Arrow keys to move, X to shoot, Space to switch weapons, Z to jump',
+        completed: true
+      }
+      
+      if (storedGames) {
+        const games = JSON.parse(storedGames)
+        // Check if contra game already exists and update it
+        const contraIndex = games.findIndex((game: SavedGame) => game.id === 'contra-classic')
+        if (contraIndex !== -1) {
+          // Update existing contra game with new data
+          games[contraIndex] = contraGame
+        } else {
+          // Add new contra game at beginning
+          games.unshift(contraGame)
+        }
+        localStorage.setItem('generatedGames', JSON.stringify(games))
+        setSavedGames(games)
+      } else {
+        // Initialize with both default games
+        const defaultGame: SavedGame = {
+          id: 'mygame1',
+          name: 'Soldier Adventure',
+          description: 'A brave soldier runs through enemy territory shooting aliens and avoiding deadly bullets',
+          engine: 'Famicom',
+          gameType: 'contra',
+          createdAt: new Date().toISOString(),
+          thumbnail: '🎮',
+          controls: 'Use arrow keys to move, Space to shoot'
+        }
+        const initialGames = [contraGame, defaultGame]
+        setSavedGames(initialGames)
+        localStorage.setItem('generatedGames', JSON.stringify(initialGames))
+      }
     }
-  ]
+  }, [])
 
-  const handlePlayGame = (sentence: string, gameTitle?: string) => {
-    // Check if this is MyGame1 (contra game)
-    if (gameTitle === 'MyGame1' || sentence.includes('brave soldier runs through enemy territory')) {
+  const handlePlayGame = (game: SavedGame) => {
+    // Route to specific game implementations
+    if (game.id === 'mygame1') {
       router.push('/mygame1')
+    } else if (game.id === 'contra-classic') {
+      // Route to contra game with specific game type
+      router.push(`/play_game?id=${game.id}&gameType=contra`)
     } else {
-      router.push(`/game?sentence=${encodeURIComponent(sentence)}`)
+      // For newly generated games, we'll use a generic game page
+      router.push(`/play_game?id=${game.id}`)
     }
   }
+
+  const handleRemoveGame = (gameId: string) => {
+    if (confirm('Are you sure you want to remove this game?')) {
+      const updatedGames = savedGames.filter(game => game.id !== gameId)
+      setSavedGames(updatedGames)
+      localStorage.setItem('generatedGames', JSON.stringify(updatedGames))
+    }
+  }
+
+
 
 
 
@@ -57,8 +117,51 @@ export default function MyGamesPage() {
           My Games
         </h1>
 
-        <div className="my-games-grid">
-          {savedGames.map((game) => (
+        {savedGames.length === 0 ? (
+          <div style={{
+            textAlign: 'center',
+            padding: '3rem 1rem',
+            color: '#64748b'
+          }}>
+            <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🎮</div>
+            <h2 style={{ 
+              fontSize: '1.5rem', 
+              fontWeight: '600', 
+              marginBottom: '1rem',
+              color: '#1e293b'
+            }}>
+              No games yet
+            </h2>
+            <p style={{ 
+              fontSize: '1rem', 
+              marginBottom: '2rem',
+              maxWidth: '400px',
+              margin: '0 auto 2rem'
+            }}>
+              Create your first game to get started! Use our AI-powered game generator to build amazing retro games.
+            </p>
+            <button
+              onClick={() => router.push('/')}
+              style={{
+                padding: '0.75rem 2rem',
+                background: '#3b82f6',
+                color: 'white',
+                border: 'none',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                cursor: 'pointer',
+                transition: 'all 0.2s'
+              }}
+              onMouseOver={(e) => e.currentTarget.style.background = '#2563eb'}
+              onMouseOut={(e) => e.currentTarget.style.background = '#3b82f6'}
+            >
+              🚀 Create Your First Game
+            </button>
+          </div>
+        ) : (
+          <div className="my-games-grid">
+            {savedGames.map((game) => (
               <div key={game.id} className="saved-game-card">
                 <div style={{ 
                   background: '#f1f5f9',
@@ -80,25 +183,46 @@ export default function MyGamesPage() {
                   color: '#1e293b',
                   lineHeight: '1.4'
                 }}>
-                  {game.title || (game.sentence.length > 60 
-                    ? `${game.sentence.substring(0, 60)}...` 
-                    : game.sentence)
-                  }
+                  {game.name}
                 </h3>
                 
-                {game.title && (
+                <p style={{ 
+                  fontSize: '0.875rem',
+                  color: '#64748b',
+                  marginBottom: '0.5rem',
+                  fontStyle: 'italic'
+                }}>
+                  {game.description.length > 80 
+                    ? `${game.description.substring(0, 80)}...` 
+                    : game.description
+                  }
+                </p>
+                
+                <div style={{ 
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '0.5rem'
+                }}>
                   <p style={{ 
-                    fontSize: '0.875rem',
-                    color: '#64748b',
-                    marginBottom: '0.5rem',
-                    fontStyle: 'italic'
+                    fontSize: '0.75rem',
+                    color: '#3b82f6',
+                    fontWeight: '500',
+                    margin: 0
                   }}>
-                    {game.sentence.length > 80 
-                      ? `${game.sentence.substring(0, 80)}...` 
-                      : game.sentence
-                    }
+                    Engine: {game.engine}
                   </p>
-                )}
+                  <span style={{
+                    fontSize: '0.75rem',
+                    padding: '0.25rem 0.5rem',
+                    borderRadius: '0.25rem',
+                    fontWeight: '500',
+                    background: '#dcfce7',
+                    color: '#166534'
+                  }}>
+                    ✅ Complete
+                  </span>
+                </div>
                 
                 <p style={{ 
                   fontSize: '0.875rem',
@@ -110,12 +234,12 @@ export default function MyGamesPage() {
                 
                 <div style={{ 
                   display: 'flex',
-                  justifyContent: 'center'
+                  gap: '0.5rem'
                 }}>
                   <button
-                    onClick={() => handlePlayGame(game.sentence, game.title)}
+                    onClick={() => handlePlayGame(game)}
                     style={{
-                      width: '100%',
+                      flex: 1,
                       padding: '0.75rem 1rem',
                       background: '#3b82f6',
                       color: 'white',
@@ -131,10 +255,29 @@ export default function MyGamesPage() {
                   >
                     ▶ Play Game
                   </button>
+                  <button
+                    onClick={() => handleRemoveGame(game.id)}
+                    style={{
+                      padding: '0.75rem',
+                      background: '#ef4444',
+                      color: 'white',
+                      border: 'none',
+                      borderRadius: '0.375rem',
+                      fontSize: '0.875rem',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.background = '#dc2626'}
+                    onMouseOut={(e) => e.currentTarget.style.background = '#ef4444'}
+                    title="Remove game"
+                  >
+                    🗑️
+                  </button>
                 </div>
               </div>
             ))}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   )

@@ -28,19 +28,35 @@ export default function GamePage() {
     const gameId = searchParams.get('id')
     
     if (gameId) {
-      // 从 localStorage 读取游戏数据
+      // First check if it's a public game (from currentGame)
       const currentGame = localStorage.getItem('currentGame')
       if (currentGame) {
-        const gameData = JSON.parse(currentGame)
-        setSentence(gameData.sentence)
-        setGameType(gameData.id as 'mario' | 'contra' | 'raiden' | 'tank-battle' | 'hundred-floors' | 'custom')
-        setGameTitle(gameData.title)
-      } else {
-        // 如果没有游戏数据，重定向到公共游戏页面
-        router.push('/public-games')
+        const game = JSON.parse(currentGame)
+        if (game.id === gameId) {
+          setSentence(game.sentence)
+          setGameType(game.id as 'mario' | 'contra' | 'raiden' | 'tank-battle' | 'hundred-floors' | 'custom')
+          setGameTitle(game.title)
+          return
+        }
       }
+      
+      // Then check generated games
+      const storedGames = localStorage.getItem('generatedGames')
+      if (storedGames) {
+        const games = JSON.parse(storedGames)
+        const game = games.find((g: any) => g.id === gameId)
+        if (game) {
+          setSentence(game.description)
+          setGameType(game.gameType as 'mario' | 'contra' | 'raiden' | 'tank-battle' | 'hundred-floors' | 'custom')
+          setGameTitle(game.name)
+          return
+        }
+      }
+      
+      // If no game found, redirect
+      router.push('/my-games')
     } else {
-      // 兼容旧的 URL 格式
+      // Fallback for old URL format
       const sentenceParam = searchParams.get('sentence')
       const gameTypeParam = searchParams.get('gameType') as 'mario' | 'contra' | 'raiden' | 'tank-battle' | 'hundred-floors' | 'custom'
       
@@ -56,28 +72,7 @@ export default function GamePage() {
     }
   }, [searchParams, router])
 
-  // 自动保存游戏到 My Games
-  useEffect(() => {
-    if (sentence) {
-      const savedGames = JSON.parse(localStorage.getItem('savedGames') || '[]')
-      
-      // 检查是否已经保存过相同的游戏
-      const existingGame = savedGames.find((game: any) => game.sentence === sentence)
-      if (!existingGame) {
-        const newGame = {
-          id: Date.now(),
-          sentence: sentence,
-          gameType: gameType,
-          title: gameTitle || getGameDisplayName(gameType),
-          createdAt: new Date().toISOString(),
-          thumbnail: null
-        }
-        
-        savedGames.push(newGame)
-        localStorage.setItem('savedGames', JSON.stringify(savedGames))
-      }
-    }
-  }, [sentence, gameType, gameTitle])
+
 
   if (!sentence) {
     return (

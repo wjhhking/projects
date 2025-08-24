@@ -23,6 +23,12 @@ export default function GameCanvas({ sentence, gameType = 'custom', onGameStart 
   useEffect(() => {
     if (!canvasRef.current) return
 
+    // Clean up previous game instance
+    if (gameRef.current) {
+      gameRef.current.stop()
+      gameRef.current = null
+    }
+
     const canvas = canvasRef.current
     canvas.width = 800
     canvas.height = 480
@@ -54,7 +60,7 @@ export default function GameCanvas({ sentence, gameType = 'custom', onGameStart 
         gameRef.current.stop()
       }
     }
-  }, [])
+  }, [gameType])
 
   useEffect(() => {
     if (sentence && gameRef.current) {

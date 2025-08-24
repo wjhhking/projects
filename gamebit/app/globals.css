@@ -224,6 +224,67 @@ body {
   border-color: #3b82f6;
 }
 
+/* Engine section */
+.engine-section {
+  margin-top: 1.5rem;
+}
+
+.engine-dropdown-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.engine-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.engine-dropdown {
+  padding: 0.5rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  background: white;
+  color: #374151;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.engine-dropdown:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.engine-dropdown:hover {
+  border-color: #9ca3af;
+}
+
+.coming-soon-badge {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border: 1px solid #fbbf24;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* 游戏页面样式 */
 .game-page {
   min-height: 100vh;

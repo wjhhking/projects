@@ -4,9 +4,12 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+type GameEngine = 'Famicom' | 'Phaser' | 'Godot'
+
 export default function Home() {
   const [sentence, setSentence] = useState('')
   const [isGenerating, setIsGenerating] = useState(false)
+  const [selectedEngine, setSelectedEngine] = useState<GameEngine>('Famicom')
   const router = useRouter()
 
   const promptExamples = [
@@ -15,18 +18,42 @@ export default function Home() {
     "Ninja warrior runs across rooftops avoiding traps and collecting stars"
   ]
 
+  const handleEngineChange = (engine: GameEngine) => {
+    if (engine === 'Godot') {
+      alert('Godot engine is coming soon! 🚧')
+      setSelectedEngine('Famicom')
+      return
+    }
+    setSelectedEngine(engine)
+  }
+
+  const generateGameId = () => {
+    return `mygame${Date.now()}`
+  }
+
   const handleGenerate = async () => {
     if (!sentence.trim()) return
     
     setIsGenerating(true)
     
-    // Store the prompt
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('gamePrompt', sentence.trim())
+    try {
+      // Store the prompt and engine for the creation pages
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('gamePrompt', sentence.trim())
+        localStorage.setItem('selectedEngine', selectedEngine)
+      }
+      
+      // Navigate based on selected engine
+      if (selectedEngine === 'Famicom') {
+        router.push('/create_game')
+      } else if (selectedEngine === 'Phaser') {
+        router.push('/plan')
+      }
+    } catch (error) {
+      console.error('Failed to generate game:', error)
+    } finally {
+      setIsGenerating(false)
     }
-    
-    // Navigate to create game page
-    router.push('/create_game')
   }
 
   const handlePromptSelect = (prompt: string) => {
@@ -91,6 +118,21 @@ export default function Home() {
                   {prompt}
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="engine-section">
+            <div className="engine-dropdown-container">
+              <span className="engine-label">⚙️ Game Style:</span>
+              <select 
+                value={selectedEngine}
+                onChange={(e) => handleEngineChange(e.target.value as GameEngine)}
+                className="engine-dropdown"
+              >
+                <option value="Famicom">Famicom</option>
+                <option value="Phaser">Phaser</option>
+                <option value="Godot">Godot</option>
+              </select>
             </div>
           </div>
         </section>

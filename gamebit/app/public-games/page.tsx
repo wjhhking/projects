@@ -107,7 +107,7 @@ export default function PublicGamesPage() {
       sentence: game.sentence,
       category: game.category
     }))
-    router.push(`/game?id=${game.id}`)
+    router.push(`/play_game?id=${game.id}`)
   }
 
   return (
