@@ -85,10 +85,10 @@ gamebit/
 │   ├── globals.css          # 全局样式和响应式设计
 │   ├── layout.tsx           # 根布局和元数据
 │   ├── page.tsx             # 主页和游戏生成器
-│   ├── create_game/         # 游戏创建和规划
-│   ├── plan/                # 组合计划审查
-│   ├── play/                # 游戏游玩界面
-│   └── my-games/            # 已保存游戏管理
+│   ├── create/              # 统一游戏创建流程
+│   ├── play_game/           # 游戏游玩界面
+│   ├── my-games/            # 已保存游戏管理
+│   └── public-games/        # 公共游戏画廊
 ├── components/              # React 组件
 │   ├── GameCanvas.tsx       # 传统游戏画布
 │   ├── PhaserPreview.tsx    # 基于 Phaser 的游戏预览

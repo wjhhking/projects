@@ -11,6 +11,9 @@ export default function TopNavBar() {
         </Link>
       </div>
       <div className="nav-buttons">
+        <Link href="/create" className="nav-btn">
+          Create Game
+        </Link>
         <Link href="/public-games" className="nav-btn">
           Public Games
         </Link>

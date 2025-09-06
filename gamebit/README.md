@@ -83,10 +83,10 @@ gamebit/
 │   ├── globals.css          # Global styles and responsive design
 │   ├── layout.tsx           # Root layout with metadata
 │   ├── page.tsx             # Home page with game generator
-│   ├── create_game/         # Game creation and planning
-│   ├── plan/                # Composition plan review
-│   ├── play/                # Game playing interface
-│   └── my-games/            # Saved games management
+│   ├── create/              # Unified game creation flow
+│   ├── play_game/           # Game playing interface
+│   ├── my-games/            # Saved games management
+│   └── public-games/        # Public games gallery
 ├── components/              # React components
 │   ├── GameCanvas.tsx       # Traditional game canvas
 │   ├── PhaserPreview.tsx    # Phaser-based game preview
