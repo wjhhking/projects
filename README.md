@@ -37,10 +37,11 @@ A diverse collection of projects spanning games, AI/ML, web development, trading
 - 🃏 Hand evaluation and combination counting
 - 🎲 Various poker variants and utilities
 
-### [Letter Pairs](./letter_pairs/) - Word Puzzle Game
+### [Letter Pairs](./letter_pairs/) - Memory Training App
 **Python + Flask + HTML** | *Created: Sep 2024*
-- 🔤 Interactive letter matching puzzle
-- 🎯 Web-based gameplay interface
+- 🧠 Memory app for memorizing letter pair combinations
+- 🔤 Maps 2-letter combinations to memorable words
+- 🎯 Web-based training interface
 
 ## 🤖 AI & Machine Learning
 
@@ -80,6 +81,14 @@ A diverse collection of projects spanning games, AI/ML, web development, trading
 - 🎯 Machine learning model training and validation
 
 ## 🛠️ Developer Tools
+
+### [Bytebot](./bytebot/) - AI Desktop Agent
+**NestJS + Next.js + Ubuntu Desktop** | *Downloaded: Jan 2025*
+- 🤖 Open-source AI agent with its own virtual desktop
+- 🖥️ Complete Ubuntu environment for autonomous task execution
+- 🔧 Multi-application workflows and document processing
+- 🌐 REST APIs for programmatic control
+- 📚 **Reference**: [bytebot-ai/bytebot](https://github.com/bytebot-ai/bytebot)
 
 ### [LLM Debugger VSCode Extension](./llm-debugger-vscode-extension/) - AI-Powered Debugging
 **TypeScript + VSCode API + React** | *Created: Oct 2024*
