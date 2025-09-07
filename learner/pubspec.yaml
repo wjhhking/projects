@@ -1,0 +1,43 @@
+name: learner
+description: "A new Flutter project."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.8.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_math_fork: ^0.7.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - data/
+    - data/aime/
+    - data/gpqa/
+    - data/gsm8k/
+    - data/hle/
+    - data/hle/images/
+    - data/math/
+    - data/math/algebra/
+    - data/math/counting_and_probability/
+    - data/math/geometry/
+    - data/math/intermediate_algebra/
+    - data/math/number_theory/
+    - data/math/prealgebra/
+    - data/math/precalculus/
+    - data/mmlu/
+    - data/mmmu/
+    - data/swe_bench/
+    - data/aime/
+    - data/aime/AIME2025-I/
+    - data/aime/AIME2025-II/
