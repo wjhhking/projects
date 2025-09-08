@@ -136,3 +136,45 @@ jspm_packages/
 # Temporary folders
 tmp/
 temp/
+
+# Project-specific ignores
+# Bytebot project
+bytebot/.env*
+bytebot/node_modules/
+bytebot/dist/
+bytebot/build/
+bytebot/.next/
+bytebot/coverage/
+bytebot/*.log
+
+# VSCode extension projects
+llm-debugger-vscode-extension/node_modules/
+llm-debugger-vscode-extension/out/
+llm-debugger-vscode-extension/dist/
+llm-debugger-vscode-extension/*.vsix
+llm-debugger-vscode-extension/.vscode-test/
+
+python-llm-debugger-vscode/node_modules/
+python-llm-debugger-vscode/out/
+python-llm-debugger-vscode/dist/
+python-llm-debugger-vscode/*.vsix
+python-llm-debugger-vscode/.vscode-test/
+
+
+# MARA optimization data
+mara_2025_0621/data/
+mara_2025_0621/plots/
+mara_2025_0621/*.csv
+mara_2025_0621/*.json
+
+# Prop trading data
+prop_trading/data/
+prop_trading/plots/
+prop_trading/*.csv
+prop_trading/*.json
+prop_trading/models/
+
+# General project artifacts
+*.vsix
+.vscode-test/
+out/
